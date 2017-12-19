@@ -1,22 +1,16 @@
 const Koa = require('koa'),
   app = new Koa(),
   router = require('koa-router')(),
-  views = require('koa-views'),
   convert = require('koa-convert'),
   json = require('koa-json'),
   bodyparser = require('koa-bodyparser'),
   favicon = require('koa-favicon'),
-  mongo = require('./dbs/index.js'),
-  process = require('process'),
   path = require('path'),
   fs = require('fs');
 import session from 'koa-session2';
 import redisStore from './common/store.js';
 
-const index = require('./routes/index'),
-  article = require('./routes/article'),
-  user = require('./routes/user.js'),
-  messageWall = require('./routes/messageWall.js');
+const index = require('./routes/index');
 // middlewares
 app.use(bodyparser());
 app.use(convert(json()));
@@ -27,7 +21,7 @@ app.use(require('koa-static')(__dirname + '/public'));
 
 //session
 app.use(session({
-  key: "xiaobaozongID",
+  key: "xiaochengxuId",
   store: redisStore,
   httpOnly: true
 }));

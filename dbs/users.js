@@ -1,16 +1,19 @@
 let Mongoose = require('mongoose'),
 	user_Schema =  new Mongoose.Schema({
-	userName: {type: String, index: { unique: true, dropDups: true }},
-	password: {type: String, default: ''},
-	email: {type: String, default: ''},
-	avatarImg: {type: String, default: ''},
-	level: {type: Number, default: 10},
-	time: {type: Date, default: Date.now},
-	openId: {type: String, default: ''},
-	roomList: [{
-		type : Mongoose.Schema.Types.ObjectId,
-		ref: 'roomList'
-	}]
+		openid: {type: String, index: { unique: true, dropDups: true }},
+		session_key: String,
+		nickName: String, //昵称
+		avatarUrl: String, //头像
+		gender:  String, // 1时是男性，值为2时是女性，值为0时是未知
+		city: String, //城市
+		province: String, //省份
+		country: String, //国家
+		level: {type: Number, default: 10},
+		time: {type: Date, default: Date.now},
+		roomList: [{
+			type : Mongoose.Schema.Types.ObjectId,
+			ref: 'roomList'
+		}]
 });
 const UserModel = Mongoose.model('users', user_Schema);
 

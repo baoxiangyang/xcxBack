@@ -1,4 +1,3 @@
-let fs = require('fs');
 /*
 	产生随机字符串
 	number 是否含有数字
@@ -6,6 +5,8 @@ let fs = require('fs');
 	capitalLetter 是否含有大写字母
 	specialSymbol 是否含有特殊符号
 */
+const querystring = require('querystring'),
+  request = require('request');
 function getRandomStr({number = true, lowerLetter = false, capitalLetter = false, specialSymbol = false, len = 6} = {}){
     const numberStr = '0123456789',
         capitalLetterStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -41,30 +42,30 @@ function getRandomStr({number = true, lowerLetter = false, capitalLetter = false
 
 }
 
-async function loginGo (ctx, next) {
-    if(ctx.session.userInfo && ctx.session.userInfo.userName){
-        await next();
-    }else{
-        ctx.body = {
-            errorCode: -99,
-            msg: '用户未登录，请先登录'
-        };
+async function myRequest({url, body, type = 'POST'}){
+  return new Promise((resolve, reject) => {
+    url = 'https://api.weixin.qq.com' + url; 
+    if(type == 'GET'){
+      url = url + '?' + querystring.stringify(body);
+      body = undefined
     }
+    request({
+      method: type, url, body,
+      headers: {
+        'content-type': 'application/json'
+      }
+    }, function(err, res, _body){
+      if(err){
+        console.error(err);
+        reject(err);
+      }else{
+        resolve(_body)
+      }
+    });
+  });
 }
 
-async function noLoginGo(ctx, next){
-    if(ctx.session.userInfo && ctx.session.userInfo.userName){
-        ctx.body = {
-            errorCode: -98,
-            msg: '用户已登录'
-        };
-    }else{
-        await next();
-    }
-}
 module.exports = {
-	fsPromise,
 	getRandomStr,
-    loginGo,
-    noLoginGo
+  myRequest
 };
