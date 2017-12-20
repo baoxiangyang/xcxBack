@@ -44,7 +44,7 @@ function getRandomStr({number = true, lowerLetter = false, capitalLetter = false
 
 async function myRequest({url, body, type = 'POST'}){
   return new Promise((resolve, reject) => {
-    url = 'https://api.weixin.qq.com' + url; 
+    url = 'https://api.weixin.qq.com' + url;
     if(type == 'GET'){
       url = url + '?' + querystring.stringify(body);
       body = undefined
@@ -59,7 +59,7 @@ async function myRequest({url, body, type = 'POST'}){
         console.error(err);
         reject(err);
       }else{
-        resolve(_body)
+        resolve(JSON.parse(_body));
       }
     });
   });
