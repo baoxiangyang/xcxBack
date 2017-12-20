@@ -22,5 +22,9 @@ const RoomsModel  = Mongoose.model('rooms', rooms_Schema);
 module.exports = {
 	createRoom(obj) {
 		return new RoomsModel(obj).save();
+	},
+	getRoomList({find = {}, pageNo = 1, pageSize = 10}) {
+		return RoomsModel.find(find, {name: 1, _id: 1})
+			.sort({'time': -1}).skip((pageNo - 1) * pageSize).limit(pageSize);
 	}
 };

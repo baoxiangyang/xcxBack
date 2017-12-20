@@ -29,5 +29,8 @@ module.exports = {
 	},
 	updateUserInfo(find, updata) {
 		return UserModel.update(find, {$set:updata});
-	}
+	},
+	pushRoom(find, roomId) {
+		return UserModel.update(find, {$push: {roomList: roomId}});
+	} 
 };
