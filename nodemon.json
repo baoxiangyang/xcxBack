@@ -2,10 +2,7 @@
      "restartable": "rs",
      "ignore": [
          ".git",
-         "node_modules/**/node_modules",
-         "src",
-         "tempFile",
-         "tempFile/uploads"
+         "node_modules/**/node_modules"
      ],
      "verbose": true,
      "events": {

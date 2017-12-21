@@ -31,6 +31,6 @@ module.exports = {
 		return UserModel.update(find, {$set:updata});
 	},
 	pushRoom(find, roomId) {
-		return UserModel.update(find, {$push: {roomList: roomId}});
-	} 
+		return UserModel.update(find, {$addToSet: {roomList: roomId}});
+	}
 };

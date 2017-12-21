@@ -8,7 +8,7 @@ let Mongoose = require('mongoose'),
 			type : Mongoose.Schema.Types.ObjectId,
 			ref : 'users'
 		},
-		roommate:[{
+		roommates:[{
 			type : Mongoose.Schema.Types.ObjectId,
 			ref : 'users'
 		}],
@@ -20,11 +20,17 @@ let Mongoose = require('mongoose'),
 	});
 const RoomsModel  = Mongoose.model('rooms', rooms_Schema);
 module.exports = {
+	findById(_id) {
+		return RoomsModel.findById(_id);
+	},
 	createRoom(obj) {
 		return new RoomsModel(obj).save();
 	},
 	getRoomList({find = {}, pageNo = 1, pageSize = 10}) {
 		return RoomsModel.find(find, {name: 1, _id: 1})
 			.sort({'time': -1}).skip((pageNo - 1) * pageSize).limit(pageSize);
+	},
+	pushRoomMates(find, userId) {
+		return RoomsModel.update(find, {$addToSet: {roommates: userId}});
 	}
 };
