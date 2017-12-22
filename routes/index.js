@@ -5,6 +5,7 @@ const router = require('koa-router')(),
 	db = require('../dbs/index.js');
 router.post('login', async function(ctx, next){
 	let data = ctx.request.body, userInfo = null;
+	data.userInfo = data.userInfo || {};
 	try {
 		if(data.code){
 			let app = config.app,
@@ -49,7 +50,7 @@ router.post('login', async function(ctx, next){
 	}catch(e) {
 		ctx.body = {
 			code: -7,
-			msg: '获取用户微信信息失败'
+			msg: '获取用户信息失败,请重试'
 		}
 	}
 });

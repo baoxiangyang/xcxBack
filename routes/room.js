@@ -1,8 +1,5 @@
 const router = require('koa-router')(),
-  config = require('../config/config.js'),
-  {myRequest} = require('../common/base.js'),
-  {rooms, users} = require('../dbs/index.js'),
-  validator = require('../common/validator.js');
+  {rooms, users} = require('../dbs/index.js');
 //创建房间
 router.post('/createRoom', async function(ctx, next){
   let body = ctx.request.body;

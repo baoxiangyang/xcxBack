@@ -12,7 +12,8 @@
 		type: string, number, email, url, regexp(需要传pattern)
 		多条不同的规则可以合成一条
 */
-const emailReg = /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/;
+const emailReg = /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/,
+	moneyReg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/;
 function validator (data, rules) {
 	let rulesArr = Object.keys(rules), errArr = [];
 	for(let i = 0; i < rulesArr.length; i++){
@@ -39,6 +40,9 @@ function validator (data, rules) {
 					case 'maxLength':
 						value.toString().length > yRule[ruleArr[z]] && errArr.push({name: rulesArr[i], message: yRule.message || `此字段长度不大于${yRule[ruleArr[z]]}`});
 						break;
+					case 'money':
+            !moneyReg.test(value) && errArr.push({ name: rulesArr[i], message: yRule.message || `请输入正确的金额` });
+            break;
 					case 'type':
 						switch (yRule.type) {
 							case 'string':

@@ -4,15 +4,16 @@ let Mongoose = require('mongoose'),
 		name: {type: String, index: { unique: true, dropDups: true }},
 		password: String,
 		describe: {type: String, default: ''},
-		creater: {
+		noMoney: {type: Number, default: 0}, //未结算金额
+		creater: { //创建者
 			type : Mongoose.Schema.Types.ObjectId,
 			ref : 'users'
 		},
-		roommates:[{
+		roommates:[{ //成员列表
 			type : Mongoose.Schema.Types.ObjectId,
 			ref : 'users'
 		}],
-		billList:[{
+		noSettlements:[{ //未结算订单列表
 			type : Mongoose.Schema.Types.ObjectId,
 			ref : 'bills'
 		}],
@@ -31,6 +32,11 @@ module.exports = {
 			.sort({'time': -1}).skip((pageNo - 1) * pageSize).limit(pageSize);
 	},
 	pushRoomMates(find, userId) {
+		//给指定房间添加成员
 		return RoomsModel.update(find, {$addToSet: {roommates: userId}});
+	},
+	pushBill(find, billId, money){
+		//添加未结算订单, 并更新未结算金额
+		return RoomsModel.update(find, {$addToSet: {noSettlements: billId}, $inc: {noMoney: money}});
 	}
 };
