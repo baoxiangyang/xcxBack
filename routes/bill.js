@@ -11,6 +11,7 @@ router.post('/createBill', async function(ctx, next){
 
     ctx.body = {
       code: 0,
+      _id: saveBill._id,
       msg: ''
     }
   }catch(error) {

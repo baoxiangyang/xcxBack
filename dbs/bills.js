@@ -20,6 +20,12 @@ module.exports = {
   findById(_id) {
     return billsModel.findById(_id);
   },
+  findBillList(idArr) {
+    //根据_id数组查询订单
+    return billsModel.find({_id:{$in:idArr}}, {__v: 0}).populate({
+      path: 'creater', select: {nickName: 1, avatarUrl: 1, _id: 0}
+    });
+  },
   createBill(obj) {
     return new billsModel(obj).save();
   },

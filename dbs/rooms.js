@@ -15,7 +15,8 @@ let Mongoose = require('mongoose'),
 		}],
 		noSettlements:[{ //未结算订单列表
 			type : Mongoose.Schema.Types.ObjectId,
-			ref : 'bills'
+			ref : 'bills',
+			default: []
 		}],
 		time: {type: Date, default: Date.now},
 	});

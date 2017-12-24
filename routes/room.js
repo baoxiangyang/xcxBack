@@ -1,5 +1,5 @@
 const router = require('koa-router')(),
-  {rooms, users} = require('../dbs/index.js');
+  {rooms, users, bills} = require('../dbs/index.js');
 //创建房间
 router.post('/createRoom', async function(ctx, next){
   let body = ctx.request.body;
@@ -87,4 +87,30 @@ router.post('/joinRoom', async function(ctx, next){
     }
   }
 })
+
+//查询未结算订单，未结算金额
+router.post('/findNoSettlements', async function(ctx, next){
+  let {roomId, pageNo = 1, pageSize = 10} = ctx.request.body,
+  //根据房间id，查询房间信息
+  roomData = await rooms.findById(roomId);
+  if(!roomData){
+    ctx.body = {
+      code: -10,
+      msg: '房间不存在，或已删除，请重新选择'
+    }
+  }
+  //未结算订单，分页查询。(倒序分页查询)
+  let billArr = roomData.noSettlements.reverse().splice((pageNo-1) * pageSize, pageSize),
+  //根据_id 数组查询订单信息
+  billList = [];
+  if(billArr.length){
+    billList = await bills.findBillList(billArr);
+  }
+  ctx.body = {
+    code: 0,
+    total: roomData.noMoney,
+    billList,
+    name: roomData.name
+  }
+});
 module.exports = router;
