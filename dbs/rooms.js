@@ -5,6 +5,7 @@ let Mongoose = require('mongoose'),
 		password: String,
 		describe: {type: String, default: ''},
 		noMoney: {type: Number, default: 0}, //未结算金额
+		money: {type:Number, default: 0}, 	//已结算金额
 		creater: { //创建者
 			type : Mongoose.Schema.Types.ObjectId,
 			ref : 'users'
@@ -25,6 +26,10 @@ module.exports = {
 	findById(_id) {
 		return RoomsModel.findById(_id);
 	},
+	findBills(_id) {
+		//根据房间id，返回房间信息，并且获取未结算订单详细信息
+		return RoomsModel.findById(_id).populate({path:'noSettlements'});
+	},
 	createRoom(obj) {
 		return new RoomsModel(obj).save();
 	},
@@ -36,8 +41,11 @@ module.exports = {
 		//给指定房间添加成员
 		return RoomsModel.update(find, {$addToSet: {roommates: userId}});
 	},
-	pushBill(find, billId, money){
+	pushBill(find, billId, money) {
 		//添加未结算订单, 并更新未结算金额
 		return RoomsModel.update(find, {$addToSet: {noSettlements: billId}, $inc: {noMoney: money}});
+	},
+	updateRoom(find, bills, total) {
+		return RoomsModel.update(find, {$inc: {money: total, noMoney: -total}, $pull: {noSettlements: {$in: bills}}});
 	}
 };

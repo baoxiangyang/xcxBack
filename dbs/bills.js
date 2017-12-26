@@ -32,5 +32,8 @@ module.exports = {
   getBillList({find = {}, pageNo = 1, pageSize = 10}) {
     return billsModel.find(find, {name: 1, _id: 1})
       .sort({'time': -1}).skip((pageNo - 1) * pageSize).limit(pageSize);
+  },
+  updateSettlement(idArr) {
+    return billsModel.update({_id: {$in: idArr}}, {$set: {isSettlement: 1}});
   }
 };

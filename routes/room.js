@@ -1,5 +1,5 @@
 const router = require('koa-router')(),
-  {rooms, users, bills} = require('../dbs/index.js');
+  {rooms, users, bills, statements} = require('../dbs/index.js');
 //创建房间
 router.post('/createRoom', async function(ctx, next){
   let body = ctx.request.body;
@@ -111,6 +111,60 @@ router.post('/findNoSettlements', async function(ctx, next){
     total: roomData.noMoney,
     billList,
     name: roomData.name
+  }
+});
+
+//订单结算
+router.post('/settlement', async function(ctx, next){
+  let {roomId}= ctx.request.body, userid = ctx.session.userInfo._id,
+    //获取房间信息，订单信息
+    roomData = await rooms.findBills(roomId),
+    //订单保存信息
+    saveData = {
+      totalMoney: 0,
+      averageMoney: 0,
+      startTime: '',
+      endTime: '',
+      mateInfos: [],
+      bills: []
+    };
+    roomData.roommates.push(roomData.creater);
+    //统计用户消费
+    saveData.mateInfos = roomData.roommates.map(function(id){
+      let tempData = {
+        mate: id,
+        money: 0,
+        isStatementer: userid == id ? true : false
+      };
+      for(let i = 0, len = roomData.noSettlements.length; i < len; i++){
+        let item = roomData.noSettlements[i];
+        if(item.creater.toString() == id.toString()){
+          tempData.money += item.money
+        }
+      }
+      return tempData;
+    });
+    //计算需要保存的数据
+    for(let i = 0, len = roomData.noSettlements.length; i < len; i++){
+      let item = roomData.noSettlements[i];
+      saveData.totalMoney += item.money;
+      saveData.bills.push(item._id);
+      (i == 0) && (saveData.startTime = item.time);
+      (i == (len-1)) && (saveData.endTime = item.time);
+    }
+    saveData.averageMoney = saveData.totalMoney / (saveData.mateInfos.length);
+    //保存结算表
+    let saveResult = await statements.createStatement(saveData),
+    //批量修改订单结算状态, 修改房间 未结算列表，未结算金额，已结算金额
+    [updateBill, updateRoom] = await Promise.all([bills.updateSettlement(saveData.bills),
+        rooms.updateRoom({_id: roomId}, saveData.bills, saveData.totalMoney)]);
+
+  ctx.body = {
+    code: 0,
+    saveData,
+    updateBill,
+    updateBill,
+    updateRoom
   }
 });
 module.exports = router;

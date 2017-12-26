@@ -4,13 +4,13 @@ let mongoConfig = require('../config/config.js').mongodb,
 db = mongoose.connect(`mongodb://${mongoConfig.user}:${mongoConfig.password}@${mongoConfig.host}:${mongoConfig.port}/${mongoConfig.dbs}`, {useMongoClient: true}),
 rooms = require('./rooms'),
 users = require('./users'),
-bills = require('./bills.js');
-
+bills = require('./bills.js'),
+statements = require('./statements');
 
 db.then(() => {
 	console.log('连接成功');
 }, (err) => {
-	console.log('连接错误', err);
+	console.error('连接错误', err);
 });
 
-module.exports = Object.assign({users, rooms, bills});
+module.exports = Object.assign({users, rooms, bills, statements});
