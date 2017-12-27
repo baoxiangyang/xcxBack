@@ -128,6 +128,13 @@ router.post('/settlement', async function(ctx, next){
       mateInfos: [],
       bills: []
     };
+    if(!roomData || !roomData.noSettlements.length){
+      ctx.body = {
+        code: -11,
+        msg: '没有需要结算的订单'
+      }
+      return;
+    }
     roomData.roommates.push(roomData.creater);
     //统计用户消费
     saveData.mateInfos = roomData.roommates.map(function(id){
@@ -152,19 +159,17 @@ router.post('/settlement', async function(ctx, next){
       (i == 0) && (saveData.startTime = item.time);
       (i == (len-1)) && (saveData.endTime = item.time);
     }
-    saveData.averageMoney = saveData.totalMoney / (saveData.mateInfos.length);
-    //保存结算表
-    let saveResult = await statements.createStatement(saveData),
-    //批量修改订单结算状态, 修改房间 未结算列表，未结算金额，已结算金额
-    [updateBill, updateRoom] = await Promise.all([bills.updateSettlement(saveData.bills),
-        rooms.updateRoom({_id: roomId}, saveData.bills, saveData.totalMoney)]);
-
-  ctx.body = {
-    code: 0,
-    saveData,
-    updateBill,
-    updateBill,
-    updateRoom
-  }
+    saveData.totalMoney = parseFloat(saveData.totalMoney.toFixed(2))
+    saveData.averageMoney = parseFloat((saveData.totalMoney / (saveData.mateInfos.length)).toFixed(2));
+    //保存结算表; 批量修改订单结算状态; 修改房间 未结算列表，未结算金额，已结算金额
+    let [saveResult, updateBill, updateRoom] = await Promise.all([
+        statements.createStatement(saveData),
+        bills.updateSettlement(saveData.bills),
+        rooms.updateRoom({_id: roomId}, saveData.bills, saveData.totalMoney)
+      ]);
+    ctx.body = {
+      code: 0,
+      msg: '结算成功'
+    }
 });
 module.exports = router;

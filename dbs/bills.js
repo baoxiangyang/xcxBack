@@ -22,7 +22,7 @@ module.exports = {
   },
   findBillList(idArr) {
     //根据_id数组查询订单
-    return billsModel.find({_id:{$in:idArr}}, {__v: 0}).populate({
+    return billsModel.find({_id: {$in: idArr}}, {__v: 0}).populate({
       path: 'creater', select: {nickName: 1, avatarUrl: 1, _id: 0}
     });
   },
@@ -34,6 +34,6 @@ module.exports = {
       .sort({'time': -1}).skip((pageNo - 1) * pageSize).limit(pageSize);
   },
   updateSettlement(idArr) {
-    return billsModel.update({_id: {$in: idArr}}, {$set: {isSettlement: 1}});
+    return billsModel.updateMany({_id: {$in: idArr}}, {$set: {isSettlement: 1}}, {multi: true});
   }
 };
