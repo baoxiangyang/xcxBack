@@ -12,7 +12,8 @@ import redisStore from './common/store.js';
 
 const index = require('./routes/index'),
   room = require('./routes/room'),
-  bill = require('./routes/bill');
+  bill = require('./routes/bill'),
+  statement = require('./routes/statement');
 // middlewares
 app.use(bodyparser());
 app.use(convert(json()));
@@ -39,6 +40,7 @@ app.use(async (ctx, next) => {
 router.use('/', index.routes(), index.allowedMethods());
 router.use('/room', room.routes(), room.allowedMethods());
 router.use('/bill', bill.routes(), bill.allowedMethods());
+router.use('/statement', statement.routes(), statement.allowedMethods());
 
 app.use(router.routes(), router.allowedMethods());
 // response

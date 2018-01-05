@@ -17,11 +17,22 @@ let Mongoose = require('mongoose'),
       type : Mongoose.Schema.Types.ObjectId,
       ref: 'bills'
     }],
+    room: { //结算房间
+      type : Mongoose.Schema.Types.ObjectId,
+      ref: 'rooms'
+    },
     time: {type: Date, default: Date.now}, //结算时间
 });
 const statementModel = Mongoose.model('statements', statement_Schema);
 module.exports = {
   createStatement(data) {
     return new statementModel(data).save();
+  },
+  findList(find, {limit, pageNo = 1, pageSize = 10}){
+    if(limit){
+      return statementModel.find(find).sort({time: -1}).limit(limit);
+    }else{
+      return statementModel.find(find).sort({'time': -1}).skip((pageNo - 1) * pageSize).limit(pageSize);
+    }
   }
 }

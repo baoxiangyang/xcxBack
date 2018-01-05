@@ -15,7 +15,7 @@ router.post('/createBill', async function(ctx, next){
       msg: ''
     }
   }catch(error) {
-    console.error(error, saveData._creater, saveData.room, saveData.money);
+    console.error(error);
     ctx.body = {
       code: -9,
       msg: '保存账单失败，请重试'

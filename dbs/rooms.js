@@ -26,6 +26,23 @@ module.exports = {
 	findById(_id) {
 		return RoomsModel.findById(_id);
 	},
+	findByIdInfo(_id) {
+		return RoomsModel.findById(_id, {
+			password: 0
+		}).populate([{
+			path: 'creater',
+			select: {
+				avatarUrl: 1,
+				nickName: 1
+			}
+		},  {
+			path: 'roommates',
+			select: {
+				avatarUrl: 1,
+				nickName: 1
+			}
+		}]);
+	},
 	findBills(_id) {
 		//根据房间id，返回房间信息，并且获取未结算订单详细信息
 		return RoomsModel.findById(_id).populate({path:'noSettlements'});

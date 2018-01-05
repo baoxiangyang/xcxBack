@@ -33,6 +33,7 @@ router.post('/createRoom', async function(ctx, next){
     }
 });
 
+//获取房间列表
 router.post('/getRoomList', async function(ctx, next){
   try{
     let body = ctx.request.body, find = {};
@@ -121,6 +122,7 @@ router.post('/settlement', async function(ctx, next){
     roomData = await rooms.findBills(roomId),
     //订单保存信息
     saveData = {
+      room: roomId,
       totalMoney: 0,
       averageMoney: 0,
       startTime: '',
@@ -159,7 +161,7 @@ router.post('/settlement', async function(ctx, next){
       (i == 0) && (saveData.startTime = item.time);
       (i == (len-1)) && (saveData.endTime = item.time);
     }
-    saveData.totalMoney = parseFloat(saveData.totalMoney.toFixed(2))
+    saveData.totalMoney = parseFloat(saveData.totalMoney.toFixed(2));
     saveData.averageMoney = parseFloat((saveData.totalMoney / (saveData.mateInfos.length)).toFixed(2));
     //保存结算表; 批量修改订单结算状态; 修改房间 未结算列表，未结算金额，已结算金额
     let [saveResult, updateBill, updateRoom] = await Promise.all([
@@ -171,5 +173,24 @@ router.post('/settlement', async function(ctx, next){
       code: 0,
       msg: '结算成功'
     }
+});
+
+//获取房间详情
+router.post('/info', async function(ctx, next){
+  try{
+    let { roomId } = ctx.request.body,
+    roomInfo = await rooms.findByIdInfo(roomId);
+    ctx.body = {
+      code: 0,
+      data: roomInfo
+    }
+  }catch(e) {
+    console.error(e);
+    ctx.body = {
+      code: -12,
+      msg: '获取信息失败，请重试'
+    }
+  }
+
 });
 module.exports = router;
