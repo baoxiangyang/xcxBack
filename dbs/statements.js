@@ -34,5 +34,8 @@ module.exports = {
     }else{
       return statementModel.find(find).sort({'time': -1}).skip((pageNo - 1) * pageSize).limit(pageSize);
     }
+  },
+  findById(_id) {
+    return statementModel.findById(_id);
   }
 }
